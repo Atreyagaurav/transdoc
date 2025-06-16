@@ -1,0 +1,12 @@
+title = Sample Chapter
+language = english
+
+@first
+This << is = sth >> the first line
+---
+translation
+
+@second
+Second line
+---
+translation of second
