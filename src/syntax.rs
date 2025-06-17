@@ -92,7 +92,7 @@ impl Chapter {
             f,
             r#"
 <html>
-    <title> {} </title>
+    <title> {0} </title>
     <body>
 	<style>
 	 .tl {{
@@ -111,11 +111,22 @@ impl Chapter {
 	     background-color: pink;
 	 }}
 	</style>
+<h2> {0} </h2>
 "#,
             self.title
         )?;
         for s in &self.sentences {
             writeln!(f, "{}", s.html())?
+        }
+        if !self.dictionary.is_empty() {
+            write!(
+                f,
+                "<h3>Dictionary</h3><table><tr><th>Word</th> <th>Meanings</th></tr>"
+            )?;
+            for (k, v) in &self.dictionary {
+                write!(f, "<tr><td>{k}</td><td>{}</td></tr>", v.join("; "))?;
+            }
+            write!(f, "</table>")?;
         }
         write!(f, "</body></html>")?;
         Ok(())
