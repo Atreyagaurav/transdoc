@@ -64,6 +64,28 @@ pub struct Chapter {
 }
 
 impl Chapter {
+    pub fn process(&mut self) {
+        for s in &mut self.sentences {
+            for w in &mut s.original {
+                match w {
+                    OrgFragment::Simple(_) => (),
+                    OrgFragment::Meaning(s, m) => {
+                        if let std::collections::hash_map::Entry::Vacant(e) =
+                            self.dictionary.entry(s.to_string())
+                        {
+                            e.insert(m.clone());
+                        }
+                    }
+                    OrgFragment::DictLookup(s) => {
+                        if let Some(m) = self.dictionary.get(s) {
+                            *w = OrgFragment::Meaning(s.to_string(), m.clone());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     pub fn to_html<P: AsRef<Path>>(&self, file: P) -> std::io::Result<()> {
         let mut f = File::create(file)?;
         write!(

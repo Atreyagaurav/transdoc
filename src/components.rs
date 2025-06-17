@@ -6,7 +6,8 @@ use nom::{
     branch::alt,
     combinator::value,
     multi::{many0, many1},
-    sequence::{preceded, terminated}, Parser,
+    sequence::{preceded, terminated},
+    Parser,
 };
 
 pub fn string_val(inp: TokenList<'_>) -> MatchRes<'_, String> {

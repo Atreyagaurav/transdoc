@@ -163,8 +163,35 @@ impl FromStr for Chapter {
     }
 }
 
-fn load_dictionary(_file: &str) -> HashMap<String, Vec<String>> {
-    HashMap::new()
+fn load_dictionary(file: &str) -> HashMap<String, Vec<String>> {
+    let mut dict = HashMap::new();
+    if let Ok(s) = std::fs::read_to_string(file) {
+        let tokens = crate::tokenizer::get_tokens(&s);
+
+        match trailing_newlines(attrs)
+            .parse(TokenList::new(&tokens))
+            .finish()
+        {
+            Ok((rest, attrs)) => {
+                dict.extend(attrs.into_iter().map(|(k, v)| (k, vec![v])));
+                if !rest.is_empty() {
+                    let err = key_val(rest)
+                        .finish()
+                        .expect_err("Rest should be empty if network parse is complete");
+                    eprintln!(
+                        "{}",
+                        ParseError::new(TokenList::new(&tokens), err.internal.input, err.ty,)
+                            .user_msg(Some(file))
+                    )
+                }
+            }
+            Err(e) => eprintln!(
+                "{}",
+                ParseError::new(TokenList::new(&tokens), e.internal.input, e.ty,)
+            ),
+        }
+    }
+    dict
 }
 
 #[cfg(test)]

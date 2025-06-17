@@ -10,8 +10,9 @@ fn main() {
     if let Some(f) = args.get(1) {
         let contents = std::fs::read_to_string(f).unwrap();
         match syntax::Chapter::from_str(&contents) {
-            Ok(chap) => {
+            Ok(mut chap) => {
                 if let Some(o) = args.get(2) {
+                    chap.process();
                     chap.to_html(o).unwrap();
                 } else {
                     println!("{chap:?}")
